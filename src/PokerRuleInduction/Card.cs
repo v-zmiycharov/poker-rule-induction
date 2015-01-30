@@ -13,7 +13,7 @@ namespace PokerRuleInduction
         public int Suit { get; set; }
 
         /// <summary>
-        /// Стойност: 1-13
+        /// Стойност: 2-14
         /// </summary>
         public int Rank { get; set; }
 
@@ -22,6 +22,11 @@ namespace PokerRuleInduction
         public Card(int suit, int rank)
         {
             this.Suit = suit;
+
+            // Ace case
+            if (rank == 1)
+                rank = 14;
+
             this.Rank = rank;
         }
     }

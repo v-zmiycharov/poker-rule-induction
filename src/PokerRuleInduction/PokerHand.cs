@@ -35,12 +35,11 @@ namespace PokerRuleInduction
             for (int i = 0; i < Constants.CARDS_COUNT_IN_HAND; i++)
             {
                 int suit = Int32.Parse(items[index]);
-                int rank = Int32.Parse(items[index+1]);
+                int rank = Int32.Parse(items[index + 1]);
                 index += 2;
                 this.Cards.Add(new Card(suit, rank));
             }
         }
-
 
         public override string ToString()
         {
@@ -49,8 +48,8 @@ namespace PokerRuleInduction
             if (this.Id.HasValue)
                 sb.Append(this.Id.Value + Constants.COMMA_SEPARATOR);
 
-            if(this.Cards != null)
-                foreach(var card in Cards)
+            if (this.Cards != null)
+                foreach (var card in Cards)
                 {
                     sb.Append(card.Suit + Constants.COMMA_SEPARATOR);
                     sb.Append(card.Rank + Constants.COMMA_SEPARATOR);
@@ -66,5 +65,109 @@ namespace PokerRuleInduction
 
             return result;
         }
+
+        public string GetRulesInfo()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            var orderedCards = this.GetOrderedCardsRules();
+            if (orderedCards != null && orderedCards.Count > 0)
+            {
+                foreach(var rule in orderedCards)
+                {
+                    sb.Append(rule.ToString() + Environment.NewLine);
+                }
+            }
+
+            var sameSuitCards = this.GetSameSuitRules();
+            if (sameSuitCards != null && sameSuitCards.Count > 0)
+            {
+                foreach (var rule in sameSuitCards)
+                {
+                    sb.Append(rule.ToString() + Environment.NewLine);
+                }
+            }
+
+            var sameRankCards = this.GetSameRankRules();
+            if (sameRankCards != null && sameRankCards.Count > 0)
+            {
+                foreach (var rule in sameRankCards)
+                {
+                    sb.Append(rule.ToString() + Environment.NewLine);
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        #region Get rules
+
+        public List<OrderedCardsRule> GetOrderedCardsRules()
+        {
+            List<OrderedCardsRule> result = new List<OrderedCardsRule>();
+
+            var orderedCards = this.Cards.OrderBy(e => e.Rank).ToList();
+
+            for (int i = 0; i < orderedCards.Count; i++)
+            {
+                var currentCollection = new List<Card>();
+                currentCollection.Add(orderedCards[i]);
+
+                while(i+1 != orderedCards.Count && orderedCards[i+1].Rank - orderedCards[i].Rank == 1)
+                {
+                    i++;
+                    currentCollection.Add(orderedCards[i]);
+                }
+
+                if (currentCollection.Count > 1)
+                    result.Add(new OrderedCardsRule()
+                        {
+                            StartRank = currentCollection[0].Rank,
+                            Suits = currentCollection.Select(e=>e.Suit).ToList()
+                        });
+            }
+
+            return result;
+        }
+
+        public List<SameSuitRule> GetSameSuitRules()
+        {
+            List<SameSuitRule> result = new List<SameSuitRule>();
+
+            Dictionary<int, List<Card>> suitGroups = this.Cards.GroupBy(e => e.Suit)
+                .ToDictionary(e => e.Key, e => e.ToList());
+
+            result.AddRange(
+                suitGroups.Where(e => e.Value.Count > 2)
+                .Select(e => new SameSuitRule()
+                {
+                    Suit = e.Key,
+                    Ranks = e.Value.Select(val => val.Rank).ToList()
+                }).ToList()
+                );
+
+            return result;
+        }
+
+        public List<SameRankRule> GetSameRankRules()
+        {
+            List<SameRankRule> result = new List<SameRankRule>();
+
+            Dictionary<int, List<Card>> rankGroups = this.Cards.GroupBy(e => e.Rank)
+                .ToDictionary(e => e.Key, e => e.ToList());
+
+            result.AddRange(
+                rankGroups.Where(e => e.Value.Count > 1)
+                .Select(e => new SameRankRule()
+                {
+                    Rank = e.Key,
+                    Suits = e.Value.Select(val => val.Suit).ToList()
+                }).ToList()
+                );
+
+            return result;
+        }
+
+        #endregion
     }
 }

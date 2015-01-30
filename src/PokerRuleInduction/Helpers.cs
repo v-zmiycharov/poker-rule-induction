@@ -21,6 +21,7 @@ namespace PokerRuleInduction
             {
                 var hand = new PokerHand(line);
                 Debug.WriteLine(hand.ToString());
+                Debug.WriteLine(hand.GetRulesInfo());
             }
         }
     }
