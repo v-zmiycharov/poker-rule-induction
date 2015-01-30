@@ -9,6 +9,10 @@ namespace PokerRuleInduction
     {
         static void Main(string[] args)
         {
+            Helpers.ReadTrainData();
+
+            Console.WriteLine("Press any key to exit the program");
+            Console.ReadKey();
         }
     }
 }
