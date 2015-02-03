@@ -9,6 +9,7 @@ namespace PokerRuleInduction
     {
         public RuleType Type { get; set; }
         public int Occurs { get; set; }
+        public List<int> Sizes { get; set; }
 
         public ConclusiveRule() { }
         

@@ -10,6 +10,14 @@ namespace PokerRuleInduction
         public int Rank { get; set; }
         public List<int> Suits { get; set; }
 
+        public int Size
+        {
+            get
+            {
+                return this.Suits.Count;
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

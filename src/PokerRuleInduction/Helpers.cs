@@ -78,7 +78,7 @@ namespace PokerRuleInduction
         }
 
         public static Dictionary<int, List<ConclusiveRule>> HandConclusiveRulesDict = new Dictionary<int, List<ConclusiveRule>>();
-        
+
         private static void FillHandConclusiveRulesDict(int hand, RuleType type)
         {
             var occurs = GetRuleOccurs(type, hand);
@@ -88,7 +88,7 @@ namespace PokerRuleInduction
 
                 Debug.WriteLine(String.Format("Hand {0}: {1}% {2} occurs rule {3}", hand
                     , perc, occur, type.ToString()));
-                
+
                 if (perc == 100)
                 {
                     if (!HandConclusiveRulesDict.ContainsKey(hand))
@@ -115,5 +115,138 @@ namespace PokerRuleInduction
 
         #endregion
 
+        #region Conclusive rules sizes
+
+        public static void FindConclusiveRulesSizes()
+        {
+            foreach(var key in HandConclusiveRulesDict.Keys)
+            {
+                var rules = new List<ConclusiveRule>();
+                rules.AddRange(HandConclusiveRulesDict[key]);
+
+                foreach (var rule in rules)
+                {
+                    switch (rule.Type)
+                    {
+                        case RuleType.OrderedCards:
+                            {
+                                List<int> ruleSizes = new List<int>();
+                                var foundRules = HandOrderedCardsDict[key];
+                                foreach(var list in foundRules)
+                                {
+                                    ruleSizes.AddRange(list.Select(e=>e.Size).Distinct());
+                                }
+                                ruleSizes = ruleSizes.Distinct().ToList();
+
+                                if(ruleSizes.Count > rule.Occurs)
+                                    HandConclusiveRulesDict[key].Remove(rule);
+                                else if(rule.Occurs ==1)
+                                {
+                                    rule.Sizes = ruleSizes;
+                                }
+                                else if(rule.Occurs >=2)
+                                {
+                                    rule.Sizes = ruleSizes;
+
+                                    var firstList = foundRules[0];
+
+                                    Dictionary<int, int> SizesCountsDict = firstList.GroupBy(e => e.Size)
+                                        .ToDictionary(e => e.Key, e => e.Count());
+
+                                    foreach (var list in foundRules)
+                                    {
+                                        foreach(var size in SizesCountsDict.Keys)
+                                        {
+                                            if(list.Count(e=>e.Size == size) != SizesCountsDict[size])
+                                            {
+                                                HandConclusiveRulesDict[key].Remove(rule);
+                                            }
+                                        }
+                                    }
+                                }
+                            } break;
+
+                        case RuleType.SameRank:
+                            {
+                                List<int> ruleSizes = new List<int>();
+                                var foundRules = HandSameRankDict[key];
+                                foreach (var list in foundRules)
+                                {
+                                    ruleSizes.AddRange(list.Select(e => e.Size).Distinct());
+                                }
+                                ruleSizes = ruleSizes.Distinct().ToList();
+
+                                if (ruleSizes.Count > rule.Occurs)
+                                    HandConclusiveRulesDict[key].Remove(rule);
+                                else if (rule.Occurs == 1)
+                                {
+                                    rule.Sizes = ruleSizes;
+                                }
+                                else if (rule.Occurs >= 2)
+                                {
+                                    rule.Sizes = ruleSizes;
+
+                                    var firstList = foundRules[0];
+
+                                    Dictionary<int, int> SizesCountsDict = firstList.GroupBy(e => e.Size)
+                                        .ToDictionary(e => e.Key, e => e.Count());
+
+                                    foreach (var list in foundRules)
+                                    {
+                                        foreach (var size in SizesCountsDict.Keys)
+                                        {
+                                            if (list.Count(e => e.Size == size) != SizesCountsDict[size])
+                                            {
+                                                HandConclusiveRulesDict[key].Remove(rule);
+                                            }
+                                        }
+                                    }
+                                }
+                            } break;
+
+                        case RuleType.SameSuit:
+                            {
+                                List<int> ruleSizes = new List<int>();
+                                var foundRules = HandSameSuitDict[key];
+                                foreach (var list in foundRules)
+                                {
+                                    ruleSizes.AddRange(list.Select(e => e.Size).Distinct());
+                                }
+                                ruleSizes = ruleSizes.Distinct().ToList();
+
+                                if (ruleSizes.Count > rule.Occurs)
+                                    HandConclusiveRulesDict[key].Remove(rule);
+                                else if (rule.Occurs == 1)
+                                {
+                                    rule.Sizes = ruleSizes;
+                                }
+                                else if (rule.Occurs >= 2)
+                                {
+                                    rule.Sizes = ruleSizes;
+
+                                    var firstList = foundRules[0];
+
+                                    Dictionary<int, int> SizesCountsDict = firstList.GroupBy(e => e.Size)
+                                        .ToDictionary(e => e.Key, e => e.Count());
+
+                                    foreach (var list in foundRules)
+                                    {
+                                        foreach (var size in SizesCountsDict.Keys)
+                                        {
+                                            if (list.Count(e => e.Size == size) != SizesCountsDict[size])
+                                            {
+                                                HandConclusiveRulesDict[key].Remove(rule);
+                                            }
+                                        }
+                                    }
+                                }
+                            } break;
+                        default: throw new Exception("Invalid rule type");
+                    }
+                }
+            }
+        }
+
+        #endregion
     }
 }

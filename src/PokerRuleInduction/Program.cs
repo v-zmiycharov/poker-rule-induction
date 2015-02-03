@@ -12,8 +12,8 @@ namespace PokerRuleInduction
         {
             Helpers.ReadTrainData();
             Helpers.SaveConclusiveRules();
+            Helpers.FindConclusiveRulesSizes();
             
-
             Console.WriteLine("Press any key to exit the program");
             Console.ReadKey();
         }

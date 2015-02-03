@@ -119,6 +119,9 @@ namespace PokerRuleInduction
                     currentCollection.Add(orderedCards[i]);
                 }
 
+                if (i + 1 == orderedCards.Count && orderedCards[i].Rank - orderedCards[0].Rank == 12)
+                    currentCollection.Add(orderedCards[0]);
+
                 if (currentCollection.Count > 1)
                     result.Add(new OrderedCardsRule()
                         {

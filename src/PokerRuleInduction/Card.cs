@@ -24,8 +24,8 @@ namespace PokerRuleInduction
             this.Suit = suit;
 
             // Ace case
-            if (rank == 1)
-                rank = 14;
+            // if (rank == 1)
+            //     rank = 14;
 
             this.Rank = rank;
         }
