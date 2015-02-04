@@ -543,5 +543,24 @@ namespace PokerRuleInduction
         }
 
         #endregion
+
+        #region Undefined hands
+
+        public static List<int> UndefinedHands = new List<int>();
+
+        public static void DetermineUndefinedHands()
+        {
+            UndefinedHands.AddRange(FinalRulesDict.Keys.Where(e => FinalRulesDict[e].Count == 0));
+        }
+
+        public static int GetRandomUndefinedHand()
+        {
+            Random rnd = new Random();
+            var index = rnd.Next(UndefinedHands.Count);
+
+            return UndefinedHands[index];
+        }
+
+        #endregion
     }
 }
