@@ -248,5 +248,69 @@ namespace PokerRuleInduction
         }
 
         #endregion
+
+        #region Define first rules
+
+        public static List<int> FinalHands = new List<int>();
+        
+        public static void DetermineFinalRules()
+        {
+            int keysCount = HandConclusiveRulesDict.Keys.Count;
+            var keys = new List<int>();
+            keys.AddRange(HandConclusiveRulesDict.Keys);
+
+            foreach(var hand in keys)
+            {
+                if(hand == 6 || hand == 7)
+                { }
+
+                List<int> keysOposingRules = new List<int>();
+
+                foreach(var rule in HandConclusiveRulesDict[hand])
+                {
+                    keysOposingRules.AddRange( 
+                        HandConclusiveRulesDict.Keys
+                        .Where(e=> HandConclusiveRulesDict[e]
+                        .Any(r => r.Type == rule.Type
+                        && (r.Occurs != rule.Occurs || !AreListsSame(r.Sizes, rule.Sizes)))
+                        && 
+                        !HandConclusiveRulesDict[e]
+                        .Any(r => r.Type == rule.Type
+                        && r.Occurs == rule.Occurs && AreListsSame(r.Sizes, rule.Sizes))
+                        )
+                    );
+                }
+
+                keysOposingRules = keysOposingRules.Distinct().ToList();
+
+                if (keysOposingRules.Count == keysCount - 1)
+                    FinalHands.Add(hand);
+            }
+        }
+
+        private static bool AreListsSame(List<int> list1, List<int> list2)
+        {
+            if (list1 == null && list2 == null)
+                return true;
+
+            if ((list1 == null && list2 != null)
+                || (list1 != null && list2 == null)
+                || list1.Count != list2.Count)
+                return false;
+
+            list1 = list1.OrderBy(e => e).ToList();
+            list2 = list2.OrderBy(e => e).ToList();
+
+            for (int i = 0; i < list1.Count;i++ )
+            {
+                if (list1[i] != list2[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+
     }
 }
