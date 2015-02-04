@@ -283,6 +283,8 @@ namespace PokerRuleInduction
                 if (keysOposingRules.Count == keysCount - 1)
                     FinalHands.Add(hand);
             }
+
+            FillFinalRulesDict();
         }
 
         private static bool AreListsSame(List<int> list1, List<int> list2)
@@ -323,6 +325,15 @@ namespace PokerRuleInduction
 
                     HandConclusiveRulesDict.Remove(hand);
                 }
+            }
+
+            if(HandConclusiveRulesDict.Keys.Count == 1)
+            {
+                var key = HandConclusiveRulesDict.Keys.First();
+
+                FinalRulesDict.Add(key, HandConclusiveRulesDict[key]);
+
+                HandConclusiveRulesDict.Remove(key);
             }
         }
 
@@ -422,8 +433,7 @@ namespace PokerRuleInduction
                         }
                         startRanks = startRanks.Distinct().ToList();
 
-                        if (startRanks.Count == 1)
-                            foundRule.OrderedCardsStart = startRanks[0];
+                        foundRule.OrderedCardsStart = startRanks;
                     }
                 }
             }
@@ -446,6 +456,90 @@ namespace PokerRuleInduction
                 return false;
 
             return true;
+        }
+
+        #endregion
+
+        #region Complete final rules
+
+        public static void CompleteFinalRules()
+        {
+            int keysCount = HandConclusiveRulesDict.Keys.Count;
+            var keys = new List<int>();
+            keys.AddRange(HandConclusiveRulesDict.Keys);
+
+            foreach (var hand in keys)
+            {
+                List<int> keysOposingRules = new List<int>();
+
+                foreach (var rule in HandConclusiveRulesDict[hand])
+                {
+                    if(rule.Type == RuleType.SameSuit && rule.AreSameSuitCardsOrdered.HasValue)
+                    { 
+                        keysOposingRules.AddRange(
+                           HandConclusiveRulesDict.Keys
+                            .Where(e => 
+                                HandConclusiveRulesDict[e].Any(r => r.Type == rule.Type
+                                && (
+                                r.AreSameSuitCardsOrdered.HasValue && r.AreSameSuitCardsOrdered.Value == !rule.AreSameSuitCardsOrdered.Value
+                                ))
+                                ||
+                                (!rule.AreSameSuitCardsOrdered.Value
+                                && HandConclusiveRulesDict[e].Any(r => r.Type == RuleType.OrderedCards && AreListsSame(r.Sizes, rule.Sizes))
+                                )
+                            )
+                          );
+                    }
+
+                    if (rule.Type == RuleType.OrderedCards && rule.AreOrderedCardsSameSuit.HasValue)
+                    {
+                        keysOposingRules.AddRange(
+                           HandConclusiveRulesDict.Keys
+                            .Where(e =>
+                                HandConclusiveRulesDict[e].Any(r => r.Type == rule.Type
+                                && (
+                                r.AreOrderedCardsSameSuit.HasValue && r.AreOrderedCardsSameSuit.Value == !rule.AreOrderedCardsSameSuit.Value
+                                ))
+                                ||
+                                (!rule.AreOrderedCardsSameSuit.Value
+                                && HandConclusiveRulesDict[e].Any(r => r.Type == RuleType.SameSuit && AreListsSame(r.Sizes, rule.Sizes))
+                                )
+                            )
+                          );
+                    }
+
+                    if (rule.Type == RuleType.OrderedCards)
+                    {
+                        keysOposingRules.AddRange(
+                           HandConclusiveRulesDict.Keys
+                            .Where(e =>
+                                HandConclusiveRulesDict[e].Any(r => r.Type == rule.Type
+                                && !HaveSameMember(r.OrderedCardsStart, rule.OrderedCardsStart)
+                            )));
+                    }
+                }
+
+                keysOposingRules = keysOposingRules.Distinct().ToList();
+
+                if (keysOposingRules.Count == keysCount - 1)
+                    FinalHands.Add(hand);
+            }
+
+            FillFinalRulesDict();
+        }
+
+        private static bool HaveSameMember(List<int> list1, List<int> list2)
+        {
+            if (list1 == null || list1.Count == 0 || list2 == null || list2.Count == 0)
+                return false;
+
+            foreach(var item in list1)
+            {
+                if (list2.Any(e => e == item))
+                    return true;
+            }
+
+            return false;
         }
 
         #endregion

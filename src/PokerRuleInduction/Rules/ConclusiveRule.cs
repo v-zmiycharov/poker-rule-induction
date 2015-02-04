@@ -16,7 +16,7 @@ namespace PokerRuleInduction
         public bool? AreSameSuitCardsOrdered { get; set; }
         
         public bool? AreOrderedCardsSameSuit { get; set; }
-        public int? OrderedCardsStart { get; set; }
+        public List<int> OrderedCardsStart { get; set; }
 
         #endregion
 
