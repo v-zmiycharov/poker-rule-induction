@@ -18,6 +18,7 @@ namespace PokerRuleInduction
             Helpers.FillAdditionalFields();
             Helpers.CompleteFinalRules();
             Helpers.DetermineUndefinedHands();
+            Helpers.OrderHands();
             
             Console.WriteLine("Press any key to exit the program");
             Console.ReadKey();

@@ -562,5 +562,18 @@ namespace PokerRuleInduction
         }
 
         #endregion
+
+        #region Order hands
+
+        public static List<int> OrderedHands = new List<int>();
+
+        public static void OrderHands()
+        {
+            OrderedHands = FinalRulesDict.Keys
+                .Where(e => !UndefinedHands.Contains(e))
+                .OrderByDescending(e => HandCountDict[e]).ToList();
+        }
+
+        #endregion
     }
 }
