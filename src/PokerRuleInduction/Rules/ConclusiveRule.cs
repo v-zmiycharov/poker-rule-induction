@@ -11,6 +11,15 @@ namespace PokerRuleInduction
         public int Occurs { get; set; }
         public List<int> Sizes { get; set; }
 
+        #region Additional fields
+
+        public bool? AreSameSuitCardsOrdered { get; set; }
+        
+        public bool? AreOrderedCardsSameSuit { get; set; }
+        public int? OrderedCardsStart { get; set; }
+
+        #endregion
+
         public ConclusiveRule() { }
         
         public ConclusiveRule(RuleType type, int occurs)

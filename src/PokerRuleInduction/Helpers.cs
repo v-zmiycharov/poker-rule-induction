@@ -367,5 +367,87 @@ namespace PokerRuleInduction
         }
 
         #endregion
+
+        #region Fill additional fields
+
+        public static void FillAdditionalFields()
+        {
+            var keys = new List<int>();
+            keys.AddRange(HandConclusiveRulesDict.Keys);
+
+            foreach (var hand in keys)
+            {
+                var rules = new List<ConclusiveRule>();
+                rules.AddRange(HandConclusiveRulesDict[hand]);
+
+                foreach (var rule in rules)
+                {
+                    if (rule.Type == RuleType.SameSuit)
+                    {
+                        var foundRule = HandConclusiveRulesDict[hand]
+                            .First(e => e.Type == rule.Type && e.Occurs == rule.Occurs && AreListsSame(e.Sizes, rule.Sizes));
+                        
+                        if (!HandSameSuitDict[hand].Any(e => e.Any(r => !IsOrderedList(r.Ranks))))
+                        {
+                            foundRule.AreSameSuitCardsOrdered = true;
+                        }
+
+                        if (!HandSameSuitDict[hand].Any(e => e.Any(r => IsOrderedList(r.Ranks))))
+                        {
+                            foundRule.AreSameSuitCardsOrdered = false;
+                        }
+                    }
+
+                    if (rule.Type == RuleType.OrderedCards)
+                    {
+                        var foundRule = HandConclusiveRulesDict[hand]
+                            .First(e => e.Type == rule.Type && e.Occurs == rule.Occurs && AreListsSame(e.Sizes, rule.Sizes));
+
+                        if (!HandOrderedCardsDict[hand].Any(e => e.Any(r => !(r.Suits.Distinct().Count() == 1))))
+                        {
+                            foundRule.AreOrderedCardsSameSuit = true;
+                        }
+
+                        if (!HandOrderedCardsDict[hand].Any(e => e.Any(r => (r.Suits.Distinct().Count() == 1))))
+                        {
+                            foundRule.AreOrderedCardsSameSuit = false;
+                        }
+
+                        List<int> startRanks = new List<int>();
+
+                        var listOfRules = HandOrderedCardsDict[hand];
+                        foreach(var list in listOfRules)
+                        {
+                            startRanks.AddRange(list.Select(e => e.StartRank));
+                        }
+                        startRanks = startRanks.Distinct().ToList();
+
+                        if (startRanks.Count == 1)
+                            foundRule.OrderedCardsStart = startRanks[0];
+                    }
+                }
+            }
+        }
+
+        private static bool IsOrderedList(List<int> list)
+        {
+            if (list == null || list.Count <= 1)
+                return true;
+
+            var orderedList = list.OrderBy(e => e).ToList();
+
+            for (int i = 1; i < list.Count - 1; i++)
+            {
+                if (orderedList[i + 1] - orderedList[i] != 1)
+                    return false;
+            }
+
+            if (orderedList[1] - orderedList[0] != 1 && orderedList[list.Count - 1] - orderedList[0] != 12)
+                return false;
+
+            return true;
+        }
+
+        #endregion
     }
 }
