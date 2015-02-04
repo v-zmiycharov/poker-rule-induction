@@ -249,7 +249,7 @@ namespace PokerRuleInduction
 
         #endregion
 
-        #region Define first rules
+        #region Define final rules
 
         public static List<int> FinalHands = new List<int>();
         
@@ -261,9 +261,6 @@ namespace PokerRuleInduction
 
             foreach(var hand in keys)
             {
-                if(hand == 6 || hand == 7)
-                { }
-
                 List<int> keysOposingRules = new List<int>();
 
                 foreach(var rule in HandConclusiveRulesDict[hand])
@@ -312,5 +309,20 @@ namespace PokerRuleInduction
 
         #endregion
 
+        #region Fill final rules
+
+        public static Dictionary<int, List<ConclusiveRule>> FinalRulesDict = new Dictionary<int, List<ConclusiveRule>>();
+
+        public static void FillFinalRulesDict()
+        {
+            foreach(var hand in FinalHands)
+            {
+                FinalRulesDict.Add(hand, HandConclusiveRulesDict[hand]);
+
+                HandConclusiveRulesDict.Remove(hand);
+            }
+        }
+
+        #endregion
     }
 }
