@@ -327,7 +327,7 @@ namespace PokerRuleInduction
                 }
             }
 
-            if(HandConclusiveRulesDict.Keys.Count == 1)
+            if (HandConclusiveRulesDict.Keys.Count == 1)
             {
                 var key = HandConclusiveRulesDict.Keys.First();
 
@@ -397,7 +397,7 @@ namespace PokerRuleInduction
                     {
                         var foundRule = HandConclusiveRulesDict[hand]
                             .First(e => e.Type == rule.Type && e.Occurs == rule.Occurs && AreListsSame(e.Sizes, rule.Sizes));
-                        
+
                         if (!HandSameSuitDict[hand].Any(e => e.Any(r => !IsOrderedList(r.Ranks))))
                         {
                             foundRule.AreSameSuitCardsOrdered = true;
@@ -427,7 +427,7 @@ namespace PokerRuleInduction
                         List<int> startRanks = new List<int>();
 
                         var listOfRules = HandOrderedCardsDict[hand];
-                        foreach(var list in listOfRules)
+                        foreach (var list in listOfRules)
                         {
                             startRanks.AddRange(list.Select(e => e.StartRank));
                         }
@@ -474,11 +474,11 @@ namespace PokerRuleInduction
 
                 foreach (var rule in HandConclusiveRulesDict[hand])
                 {
-                    if(rule.Type == RuleType.SameSuit && rule.AreSameSuitCardsOrdered.HasValue)
-                    { 
+                    if (rule.Type == RuleType.SameSuit && rule.AreSameSuitCardsOrdered.HasValue)
+                    {
                         keysOposingRules.AddRange(
                            HandConclusiveRulesDict.Keys
-                            .Where(e => 
+                            .Where(e =>
                                 HandConclusiveRulesDict[e].Any(r => r.Type == rule.Type
                                 && (
                                 r.AreSameSuitCardsOrdered.HasValue && r.AreSameSuitCardsOrdered.Value == !rule.AreSameSuitCardsOrdered.Value
@@ -533,7 +533,7 @@ namespace PokerRuleInduction
             if (list1 == null || list1.Count == 0 || list2 == null || list2.Count == 0)
                 return false;
 
-            foreach(var item in list1)
+            foreach (var item in list1)
             {
                 if (list2.Any(e => e == item))
                     return true;
@@ -586,13 +586,16 @@ namespace PokerRuleInduction
             // Skip first line
             string line = file.ReadLine();
 
-            while ((line = file.ReadLine()) != null)
+            using (StreamWriter writer = new StreamWriter(projectDir + "\\result.txt"))
             {
-                var hand = new PokerHand(line, true);
+                while ((line = file.ReadLine()) != null)
+                {
+                    var hand = new PokerHand(line, true);
 
-                DetermineHand(hand);
+                    DetermineHand(hand);
 
-                Debug.WriteLine(hand.ToString());
+                    writer.WriteLine(hand.ToString());
+                }
             }
         }
 
@@ -605,7 +608,7 @@ namespace PokerRuleInduction
             foreach (var currentHand in OrderedHands)
             {
                 bool isCurrentHand = true;
-                foreach(var rule in FinalRulesDict[currentHand])
+                foreach (var rule in FinalRulesDict[currentHand])
                 {
                     if (!hand.ContainsRule(rule))
                     {
@@ -614,13 +617,13 @@ namespace PokerRuleInduction
                     }
                 }
 
-                if(isCurrentHand)
+                if (isCurrentHand)
                 {
                     hand.Hand = currentHand;
                 }
             }
 
-            if(!hand.Hand.HasValue)
+            if (!hand.Hand.HasValue)
                 hand.Hand = GetRandomUndefinedHand();
         }
 
