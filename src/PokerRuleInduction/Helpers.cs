@@ -595,6 +595,7 @@ namespace PokerRuleInduction
                     DetermineHand(hand);
 
                     writer.WriteLine(hand.ToString());
+                    FillResultDict(hand);
                 }
             }
         }
@@ -625,6 +626,39 @@ namespace PokerRuleInduction
 
             if (!hand.Hand.HasValue)
                 hand.Hand = GetRandomUndefinedHand();
+        }
+
+        #endregion
+
+        #region Result dictionary
+
+        public static Dictionary<int, List<int>> ResultDict = new Dictionary<int, List<int>>();
+
+        private static void FillResultDict(PokerHand hand)
+        {
+            if (hand.Hand.HasValue && hand.Id.HasValue)
+            {
+                int value = hand.Hand.Value;
+                if (!ResultDict.ContainsKey(value))
+                    ResultDict.Add(value, new List<int>());
+
+                ResultDict[value].Add(hand.Id.Value);
+            }
+        }
+
+        public static void WriteResultDict()
+        {
+            string projectDir = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+            using (StreamWriter writer = new StreamWriter(projectDir + "\\result-dict.txt"))
+            {
+                var keys = ResultDict.Keys.OrderBy(e => ResultDict[e].Count);
+
+                foreach (var key in keys)
+                {
+                    string line = String.Format("{0}: {1}", key, String.Join(Constants.COMMA_SEPARATOR, ResultDict[key]));
+                    writer.WriteLine(line);
+                }
+            }
         }
 
         #endregion

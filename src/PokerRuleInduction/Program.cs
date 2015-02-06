@@ -20,6 +20,7 @@ namespace PokerRuleInduction
             Helpers.DetermineUndefinedHands();
             Helpers.OrderHands();
             Helpers.ReadTestData();
+            Helpers.WriteResultDict();
             
             Console.WriteLine("Press any key to exit the program");
             Console.ReadKey();
