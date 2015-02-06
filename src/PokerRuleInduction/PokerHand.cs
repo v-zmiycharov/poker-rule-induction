@@ -73,7 +73,7 @@ namespace PokerRuleInduction
             var orderedCards = this.GetOrderedCardsRules();
             if (orderedCards != null && orderedCards.Count > 0)
             {
-                foreach(var rule in orderedCards)
+                foreach (var rule in orderedCards)
                 {
                     sb.Append(rule.ToString() + Environment.NewLine);
                 }
@@ -113,7 +113,7 @@ namespace PokerRuleInduction
                 var currentCollection = new List<Card>();
                 currentCollection.Add(orderedCards[i]);
 
-                while(i+1 != orderedCards.Count && orderedCards[i+1].Rank - orderedCards[i].Rank == 1)
+                while (i + 1 != orderedCards.Count && orderedCards[i + 1].Rank - orderedCards[i].Rank == 1)
                 {
                     i++;
                     currentCollection.Add(orderedCards[i]);
@@ -126,7 +126,7 @@ namespace PokerRuleInduction
                     result.Add(new OrderedCardsRule()
                         {
                             StartRank = currentCollection[0].Rank,
-                            Suits = currentCollection.Select(e=>e.Suit).ToList()
+                            Suits = currentCollection.Select(e => e.Suit).ToList()
                         });
             }
 
@@ -172,5 +172,74 @@ namespace PokerRuleInduction
         }
 
         #endregion
+
+        public bool ContainsRule(ConclusiveRule rule)
+        {
+            switch (rule.Type)
+            {
+                case RuleType.OrderedCards:
+                    {
+                        var rules = this.GetOrderedCardsRules();
+                        if (rules.Count != rule.Occurs)
+                            return false;
+
+                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).ToList()))
+                            return false;
+
+                        if(rule.AreOrderedCardsSameSuit.HasValue)
+                        {
+                            var distinctSuitsCounts = rules.Select(e=>e.Suits.Distinct().Count());
+
+                            if(rule.AreOrderedCardsSameSuit.Value
+                                && distinctSuitsCounts.Any(e=>e != 1))
+                                return false;
+
+                            if (!rule.AreOrderedCardsSameSuit.Value
+                                && distinctSuitsCounts.Any(e => e == 1))
+                                return false;
+                        }
+
+                        if(rule.OrderedCardsStart != null && rule.OrderedCardsStart.Count == 1)
+                        {
+                            int start = rule.OrderedCardsStart[0];
+                            if (rules.Any(e => e.StartRank != start))
+                                return false;
+                        }
+                    } break;
+
+                case RuleType.SameSuit:
+                    {
+                        var rules = this.GetSameSuitRules();
+                        if (rules.Count != rule.Occurs)
+                            return false;
+
+                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).ToList()))
+                            return false;
+
+                        if (rule.AreSameSuitCardsOrdered.HasValue)
+                        {
+                            if (rule.AreSameSuitCardsOrdered.Value
+                                && rules.Any(e => !Helpers.IsOrderedList(e.Ranks)))
+                                return false;
+
+                            if (!rule.AreSameSuitCardsOrdered.Value
+                                && rules.Any(e => Helpers.IsOrderedList(e.Ranks)))
+                                return false;
+                        }
+                    } break;
+
+                case RuleType.SameRank:
+                    {
+                        var rules = this.GetSameRankRules();
+                        if (rules.Count != rule.Occurs)
+                            return false;
+
+                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).ToList()))
+                            return false;
+                    } break;
+            }
+
+            return true;
+        }
     }
 }

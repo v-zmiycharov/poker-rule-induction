@@ -287,7 +287,7 @@ namespace PokerRuleInduction
             FillFinalRulesDict();
         }
 
-        private static bool AreListsSame(List<int> list1, List<int> list2)
+        public static bool AreListsSame(List<int> list1, List<int> list2)
         {
             if (list1 == null && list2 == null)
                 return true;
@@ -439,7 +439,7 @@ namespace PokerRuleInduction
             }
         }
 
-        private static bool IsOrderedList(List<int> list)
+        public static bool IsOrderedList(List<int> list)
         {
             if (list == null || list.Count <= 1)
                 return true;
@@ -572,6 +572,56 @@ namespace PokerRuleInduction
             OrderedHands = FinalRulesDict.Keys
                 .Where(e => !UndefinedHands.Contains(e))
                 .OrderByDescending(e => HandCountDict[e]).ToList();
+        }
+
+        #endregion
+
+        #region Read test data
+
+        public static void ReadTestData()
+        {
+            string projectDir = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+            StreamReader file = new StreamReader(projectDir + "\\Samples\\test.csv");
+
+            // Skip first line
+            string line = file.ReadLine();
+
+            while ((line = file.ReadLine()) != null)
+            {
+                var hand = new PokerHand(line, true);
+
+                DetermineHand(hand);
+
+                Debug.WriteLine(hand.ToString());
+            }
+        }
+
+        #endregion
+
+        #region Determine hand
+
+        public static void DetermineHand(PokerHand hand)
+        {
+            foreach (var currentHand in OrderedHands)
+            {
+                bool isCurrentHand = true;
+                foreach(var rule in FinalRulesDict[currentHand])
+                {
+                    if (!hand.ContainsRule(rule))
+                    {
+                        isCurrentHand = false;
+                        break;
+                    }
+                }
+
+                if(isCurrentHand)
+                {
+                    hand.Hand = currentHand;
+                }
+            }
+
+            if(!hand.Hand.HasValue)
+                hand.Hand = GetRandomUndefinedHand();
         }
 
         #endregion
