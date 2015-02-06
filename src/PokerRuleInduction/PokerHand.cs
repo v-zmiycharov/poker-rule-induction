@@ -183,7 +183,7 @@ namespace PokerRuleInduction
                         if (rules.Count != rule.Occurs)
                             return false;
 
-                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).ToList()))
+                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).Distinct().ToList()))
                             return false;
 
                         if(rule.AreOrderedCardsSameSuit.HasValue)
@@ -213,7 +213,7 @@ namespace PokerRuleInduction
                         if (rules.Count != rule.Occurs)
                             return false;
 
-                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).ToList()))
+                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).Distinct().ToList()))
                             return false;
 
                         if (rule.AreSameSuitCardsOrdered.HasValue)
@@ -231,10 +231,11 @@ namespace PokerRuleInduction
                 case RuleType.SameRank:
                     {
                         var rules = this.GetSameRankRules();
+
                         if (rules.Count != rule.Occurs)
                             return false;
 
-                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).ToList()))
+                        if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).Distinct().ToList()))
                             return false;
                     } break;
             }

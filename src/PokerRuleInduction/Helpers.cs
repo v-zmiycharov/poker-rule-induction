@@ -9,6 +9,8 @@ namespace PokerRuleInduction
 {
     public static class Helpers
     {
+        private static bool writeToFile = true;
+
         #region Train
 
         // From train data
@@ -289,7 +291,9 @@ namespace PokerRuleInduction
 
         public static bool AreListsSame(List<int> list1, List<int> list2)
         {
-            if (list1 == null && list2 == null)
+            if ((list1 == null && list2 == null)
+                || (list1 == null && list2 != null && list2.Count == 0)
+                || (list2 == null && list1 != null && list1.Count == 0))
                 return true;
 
             if ((list1 == null && list2 != null)
@@ -594,7 +598,9 @@ namespace PokerRuleInduction
 
                     DetermineHand(hand);
 
-                    writer.WriteLine(hand.ToString());
+                    if (writeToFile)
+                        writer.WriteLine(hand.ToString());
+
                     FillResultDict(hand);
                 }
             }
@@ -655,8 +661,10 @@ namespace PokerRuleInduction
 
                 foreach (var key in keys)
                 {
-                    string line = String.Format("{0}: {1}", key, String.Join(Constants.COMMA_SEPARATOR, ResultDict[key]));
-                    writer.WriteLine(line);
+                    string line = String.Format("{0}: {1}", key, String.Join(Constants.COMMA_SEPARATOR, ResultDict[key].Take(500)));
+
+                    if (writeToFile)
+                        writer.WriteLine(line);
                 }
             }
         }
