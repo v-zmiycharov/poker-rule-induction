@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -10,7 +11,9 @@ namespace PokerRuleInduction
     {
         static void Main(string[] args)
         {
-            Helpers.ReadTrainData();
+            string projectDir = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+
+            Helpers.ReadTrainData(projectDir + "\\Samples\\train.csv");
             Helpers.SaveConclusiveRules();
             Helpers.FindConclusiveRulesSizes();
             Helpers.DetermineFinalRules();
@@ -19,6 +22,7 @@ namespace PokerRuleInduction
             Helpers.CompleteFinalRules();
             Helpers.DetermineUndefinedHands();
             Helpers.OrderHands();
+
             Helpers.ReadTestData();
             Helpers.WriteResultDict();
             

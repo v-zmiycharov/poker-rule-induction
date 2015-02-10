@@ -19,17 +19,16 @@ namespace PokerRuleInduction
         public static Dictionary<int, List<List<SameSuitRule>>> HandSameSuitDict = new Dictionary<int, List<List<SameSuitRule>>>();
         public static Dictionary<int, int> HandCountDict = new Dictionary<int, int>();
 
-        public static void ReadTrainData()
+        public static void ReadTrainData(string path)
         {
-            string projectDir = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-            StreamReader file = new StreamReader(projectDir + "\\Samples\\train.csv");
+            StreamReader file = new StreamReader(path);
 
             // Skip first line
             string line = file.ReadLine();
 
             while ((line = file.ReadLine()) != null)
             {
-                var hand = new PokerHand(line);
+                var hand = new PokerHand(line, false, true);
 
                 if (!HandOrderedCardsDict.ContainsKey(hand.Hand.Value))
                     HandOrderedCardsDict.Add(hand.Hand.Value, new List<List<OrderedCardsRule>>());
@@ -594,7 +593,7 @@ namespace PokerRuleInduction
             {
                 while ((line = file.ReadLine()) != null)
                 {
-                    var hand = new PokerHand(line, true);
+                    var hand = new PokerHand(line, true, false);
 
                     DetermineHand(hand);
 

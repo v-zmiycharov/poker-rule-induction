@@ -13,12 +13,12 @@ namespace PokerRuleInduction
 
         public PokerHand() { }
 
-        public PokerHand(string input, bool hasId = false)
+        public PokerHand(string input, bool hasId = false, bool hasHand = false)
         {
             this.Cards = new List<Card>();
 
             var items = input.Split(',');
-            if (items.Length != Constants.ITEMS_COUNT_IN_LINE)
+            if (items.Length != Constants.ITEMS_COUNT_IN_LINE && items.Length != Constants.ITEMS_COUNT_IN_LINE - 1)
                 throw new Exception("Invalid input line");
 
             int index = 0;
@@ -27,7 +27,8 @@ namespace PokerRuleInduction
                 this.Id = Int32.Parse(items[0]);
                 index++;
             }
-            else
+
+            if (hasHand)
             {
                 this.Hand = Int32.Parse(items[Constants.ITEMS_COUNT_IN_LINE - 1]);
             }
@@ -186,12 +187,12 @@ namespace PokerRuleInduction
                         if (!Helpers.AreListsSame(rule.Sizes, rules.Select(e => e.Size).Distinct().ToList()))
                             return false;
 
-                        if(rule.AreOrderedCardsSameSuit.HasValue)
+                        if (rule.AreOrderedCardsSameSuit.HasValue)
                         {
-                            var distinctSuitsCounts = rules.Select(e=>e.Suits.Distinct().Count());
+                            var distinctSuitsCounts = rules.Select(e => e.Suits.Distinct().Count());
 
-                            if(rule.AreOrderedCardsSameSuit.Value
-                                && distinctSuitsCounts.Any(e=>e != 1))
+                            if (rule.AreOrderedCardsSameSuit.Value
+                                && distinctSuitsCounts.Any(e => e != 1))
                                 return false;
 
                             if (!rule.AreOrderedCardsSameSuit.Value
@@ -199,7 +200,7 @@ namespace PokerRuleInduction
                                 return false;
                         }
 
-                        if(rule.OrderedCardsStart != null && rule.OrderedCardsStart.Count == 1)
+                        if (rule.OrderedCardsStart != null && rule.OrderedCardsStart.Count == 1)
                         {
                             int start = rule.OrderedCardsStart[0];
                             if (rules.Any(e => e.StartRank != start))
