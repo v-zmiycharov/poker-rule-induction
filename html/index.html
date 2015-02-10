@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script>
+		
+		$(document).ready(function() {
+			var suits = ["Clubs", "Diamonds", "Hearts", "Spades"];
+			var faces = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
+			var table = $('<table>');
+			suits.forEach(function(suit) {
+				var tr = $('<tr>', { id: suit });
+				faces.forEach(function(face) {
+					tr.append($('<td>', { id: suit + "_" + face }).css(
+						'background-image', "url('resources/images/" + suit + '_' + face + ".png')"
+					));
+				});
+				table.append(tr);
+			});
+			$('#carddeck').append(table);
+			
+			for(var i=0; i<5; i++) {
+				$('#selected').append($('<div>', {
+					id: 'selected' + i
+				}));
+			}
+
+		});
+	</script>
+	<script src="engine.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+	<div id="body">
+		<div id="carddeck"></div>
+		<div id="result">
+			<div id="selected"></div>
+		</div>
+		<div id="arrow"></div>
+		<div id="result_number">
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+body {
+	background-image: url("./resources/images/table_g.png");
+}
+
+div#body {
+	margin: auto;
+	width: 925px;
+}
+
+div#carddeck td {
+	cursor: pointer;
+	width: 67px;
+	height: 99px;
+}
+
+div#selected {
+	float: left;
+}
+
+div#result {
+	margin-top: 50px;
+	overflow: auto;
+}
+
+div#selected > div {
+	width: 134px;
+	height: 198px;
+	float: left;
+	margin-left: 42px;
+	background-image: url("resources/images/Darken@2x.png");
+}
+
+div#arrow {
+	margin: 35px 25px 35px 100px;
+	width: 128px;
+	height: 128px;
+	background-image: url("resources/images/right-arrow.png");
+	float: left;
+	cursor: pointer;
+}
+
+div#result_number {
+	margin: 35px 30px;
+	float: left;
+	width: 128px;
+	height: 128px;
+	font: 100px arial;
+	color: white;
+}
